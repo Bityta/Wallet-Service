@@ -136,41 +136,77 @@ public class BankApplication {
 
                     System.out.print("\nВведите сумму, которую Вы желаете снять: ");
                     String money = scanner.nextLine();
+                    double sum = 0;
 
-                    while (Validator.isCorrectNumber(money)) {
-                        System.out.print("\nВведите Корректную сумму, которую Вы желаете снять: ");
-                        money = scanner.nextLine();
+                    while (!Validator.isCorrectNumber(money) || !Validator.isPositiveNumber(sum)) {
+
+
+                        if (!Validator.isCorrectNumber(money)) {
+                            System.out.print("\nВведите Корректную сумму, которую Вы желаете снять: ");
+                            money = scanner.nextLine();
+                        }
+
+                        sum = Double.parseDouble(money);
+
+                        if (!Validator.isPositiveNumber(sum)) {
+                            System.out.print("\nВведите Положительную сумму, которую Вы желаете снять: ");
+                            money = scanner.nextLine();
+                        }
+
+                        if (person.getBalance() < sum) {
+                            System.out.println("\n\u001B[31m" + "Недостаточно средст!" + "\u001B[0m");
+
+                        }
                     }
+                    operationDataService.addOperationData(person, Operation.withdraw, sum);
 
-                    if (person.getBalance() < Double.parseDouble(money)) {
-                        System.out.println("\n\u001B[31m" + "Недостаточно средст!" + "\u001B[0m");
-
-                    } else {
-                        operationDataService.addOperationData(person, Operation.withdraw, Double.parseDouble(money));
-
-                    }
 
                 }
                 case ("2") -> {
 
                     System.out.print("\nВведите сумму, на которую Вы желаете пополнить счет: ");
                     String money = scanner.nextLine();
+                    double sum = 0;
 
-                    while (Validator.isCorrectNumber(money)) {
-                        System.out.print("\nВведите Корректную сумму, на которую Вы желаете пополнить счет: ");
-                        money = scanner.nextLine();
+                    while (!Validator.isCorrectNumber(money) || !Validator.isPositiveNumber(sum)) {
+
+
+                        if (!Validator.isCorrectNumber(money)) {
+                            System.out.print("\nВведите Корректную сумму, на которую Вы желаете пополнить счет: ");
+                            money = scanner.nextLine();
+
+                        }
+
+                        sum = Double.parseDouble(money);
+
+                        if (!Validator.isPositiveNumber(sum)) {
+                            System.out.print("\nВведите Положительную сумму, на которую Вы желаете пополнить счет: ");
+                            money = scanner.nextLine();
+                        }
                     }
 
-                    operationDataService.addOperationData(person, Operation.replenishment, Double.parseDouble(money));
+                    operationDataService.addOperationData(person, Operation.replenishment, sum);
                 }
                 case ("3") -> {
 
                     System.out.print("\nВведите сумму, на которую Вы желаете взять кредит: ");
                     String money = scanner.nextLine();
 
-                    while (Validator.isCorrectNumber(money)) {
-                        System.out.print("\nВведите Корректную сумму, на которую Вы желаете взять кредит: ");
-                        money = scanner.nextLine();
+                    double sum = 0;
+
+                    while (!Validator.isCorrectNumber(money) || !Validator.isPositiveNumber(sum)) {
+
+                        if (!Validator.isCorrectNumber(money)) {
+                            System.out.print("\nВведите Корректную сумму, на которую Вы желаете взять кредит: ");
+                            money = scanner.nextLine();
+                        }
+
+                        sum = Double.parseDouble(money);
+
+                        if (!Validator.isPositiveNumber(sum)) {
+                            System.out.print("\nВведите Положительную сумму, на которую Вы желаете взять кредит: ");
+                            money = scanner.nextLine();
+                        }
                     }
 
                     operationDataService.addOperationData(person, Operation.credit, Double.parseDouble(money));
