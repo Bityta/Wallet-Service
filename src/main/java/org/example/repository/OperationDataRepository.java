@@ -4,7 +4,7 @@ import org.example.entity.Person;
 import org.example.utils.Operation;
 
 /**
- * Репозиторий Базы данных, хранящий операции пользователей.
+ * Репозиторий Базы Данных, хранящий операции пользователей.
  */
 public interface OperationDataRepository {
 
