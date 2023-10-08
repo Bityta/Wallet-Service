@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Модель Пользователя, задающая его основые параметры и переменные.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,24 +19,62 @@ import java.util.UUID;
 @ToString
 public class Person {
 
+    /**
+     * Имя пользователя.
+     */
     private String username;
+
+    /**
+     * Пароль пользователя.
+     */
     private String password;
-    private double money;
+
+    /**
+     * Текущий баланс пользователя.
+     */
+    private double balance;
+
+    /**
+     * Переменная, хранящая массив всех операций, производимых пользователем.
+     * Сохраняемые данные: уникальный идентификатор операции, операция, сумма операции.
+     */
     private List<Map<UUID, Map<Operation, Double>>> transactions = new ArrayList<>();
 
+    /**
+     * Конструктор
+     *
+     * @param username Имя пользователя.
+     * @param password Пароль пользователя.
+     */
     public Person(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
-    public void addMoney(double money) {
-        this.money += money;
+    /**
+     * Увелечение баланса.
+     *
+     * @param balance Прибавляемая Сумма.
+     */
+    public void addMoney(double balance) {
+        this.balance += balance;
     }
 
-    public void diffMoney(double money) {
-        this.money -= money;
+    /**
+     * Уменьшение баланса.
+     *
+     * @param balance Убавляемая Сумма.
+     */
+    public void diffMoney(double balance) {
+        this.balance -= balance;
     }
 
+    /**
+     * Добавление новой операции.
+     *
+     * @param UUIDHashMap Словарь хранящий: уникальный идентификатор операции,
+     *                    операция, сумма операции.
+     */
     public void addTransaction(Map<UUID, Map<Operation, Double>> UUIDHashMap) {
         transactions.add(UUIDHashMap);
     }

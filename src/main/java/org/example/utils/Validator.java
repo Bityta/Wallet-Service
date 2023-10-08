@@ -2,9 +2,18 @@ package org.example.utils;
 
 import org.example.service.PersonDataService;
 
+/**
+ * Валидация полей класса Person.
+ */
 public class Validator {
 
 
+    /**
+     * Проверка корректности Пароля.
+     *
+     * @param password Пароль.
+     * @return true - если пароль корректный, иначе false.
+     */
     public static boolean isCorrectPassword(String password) {
         if (password.length() < 6) {
             System.out.println("\n\u001B[31m" + "Слишком короткий пароль, используйте минимум 6 символов!" + "\u001B[0m");
@@ -14,6 +23,12 @@ public class Validator {
         return true;
     }
 
+    /**
+     * Проверка корректности Имя.
+     *
+     * @param username Имя.
+     * @return true - если имя корректное, иначе false.
+     */
 
     public static boolean isCorrectUserName(String username) {
 
@@ -46,10 +61,16 @@ public class Validator {
 
     }
 
-    public static boolean isCorrectNumber(String sum) {
+    /**
+     * Проверка коректности вводимного числа.
+     *
+     * @param number - Число
+     * @return true - если имя корректное, иначе false.
+     */
+    public static boolean isCorrectNumber(String number) {
 
         try {
-            Double.parseDouble(sum);
+            Double.parseDouble(number);
             return false;
         } catch (NumberFormatException e) {
             return true;

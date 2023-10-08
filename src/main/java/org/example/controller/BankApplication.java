@@ -10,14 +10,35 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.UUID;
 
+/**
+ * Отвечает за данные, вывводимые в консоль и навигацию в приложении.
+ */
 public class BankApplication {
 
+    /**
+     * Текущий авторизированный пользователь.
+     */
     private Person person;
+
+    /**
+     * Сервис, который осуществляет работу с данными пользователями.
+     */
     private final PersonDataService personDataService = PersonDataService.getPersonDataService();
+
+    /**
+     * Сервис, который осуществялет работу с операциями пользователей.
+     */
     private final OperationDataService operationDataService = OperationDataService.getOperationDataService();
+
+    /**
+     * Сканер, считывающий вводимые данные пользователей.
+     */
     private final Scanner scanner = new Scanner(System.in);
 
 
+    /**
+     * Выводит Главное меню, после перенаправляет пользователя на функцию - printSelectionMenu.
+     */
     public void printMainMenu() {
         System.out.println("\n\t\t\tДобро пожаловать в Online Bank\n");
         System.out.println("\t\t" + "#".repeat(40) + "\n");
@@ -25,6 +46,10 @@ public class BankApplication {
 
     }
 
+    /**
+     * Выводит меню Входа, в котором пользователь заполняет поле Имя и Пороль.
+     * После успешной авторизации, перенаправляет пользователя на функцию - printPersonalArea.
+     */
     private void printLoginMenu() {
 
         System.out.print("\nВведите ваш Логин: ");
@@ -52,14 +77,18 @@ public class BankApplication {
 
     }
 
+    /**
+     * Выводит меню Регистриции, в котором пользователь заполняеет поля Имя и Пароль.
+     * После усешной регистрации,перенаправляет пользователя на функцию - printPersonalArea.
+     **/
     private void printRegMenu() {
 
 
-        System.out.print("\nВведите Логин: ");
+        System.out.print("\nВведите Имя: ");
         String username = scanner.nextLine();
 
         while (!Validator.isCorrectUserName(username)) {
-            System.out.print("\nВведите Корректный Логин: ");
+            System.out.print("\nВведите Корректное Имя: ");
             username = scanner.nextLine();
         }
 
@@ -80,18 +109,24 @@ public class BankApplication {
         printPersonalArea();
     }
 
+    /**
+     * Выводит меню Личного Кабинета, в котором пользователь видет
+     * текущий баланс, а также ряд операций: Снятие денег, Пополнение счета,
+     * Взятие кредита, получение Выписки об операциях. А также доступен выход из
+     * личного кабинета(перенаправление на фунцию printSelectionMenu).
+     */
     private void printPersonalArea() {
 
         while (true) {
             System.out.println("\n\t\t" + "#".repeat(40));
             System.out.println("\n\t\tЛичный кабинет пользователя - " + person.getUsername());
-            System.out.println("\nТекущий баланс - " + person.getMoney() + " Рублей");
+            System.out.println("\nТекущий баланс - " + person.getBalance() + " Рублей");
 
             System.out.println("\nДоступные операции:");
             System.out.println("\t 1 - Снять деньги");
             System.out.println("\t 2 - Пополнить счет");
             System.out.println("\t 3 - Взять кредит");
-            System.out.println("\t 4 - Получить выписку о операциях");
+            System.out.println("\t 4 - Получить выписку об операциях");
             System.out.println("\t 0 - Выйти из личного кабинета");
             System.out.print("\nВыбирите и введите цифру для дальнейших действий: ");
             String input = scanner.nextLine();
@@ -107,7 +142,7 @@ public class BankApplication {
                         money = scanner.nextLine();
                     }
 
-                    if (person.getMoney() < Double.parseDouble(money)) {
+                    if (person.getBalance() < Double.parseDouble(money)) {
                         System.out.println("\n\u001B[31m" + "Недостаточно средст!" + "\u001B[0m");
 
                     } else {
@@ -155,6 +190,10 @@ public class BankApplication {
         }
     }
 
+    /**
+     * Выводит меню Входа.
+     * Доступные действия: Регистрация, Вход, Завершение работы программы.
+     */
     private void printSelectionMenu() {
 
         System.out.println("\t 1 - Войти");
@@ -179,8 +218,13 @@ public class BankApplication {
 
     }
 
-
-    public void printStatement(Person person) {
+    /**
+     * Выводит Выписку об операции конкретного пользователя.
+     * Выписка содерижит: уникальный идентификатор операции, операция, сумма операции.
+     *
+     * @param person Пользователь.
+     */
+    private void printStatement(Person person) {
 
         String username = person.getUsername();
 
