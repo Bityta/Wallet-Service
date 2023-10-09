@@ -13,7 +13,7 @@
 - Java core
 -  Collections
 -   Junit
--  Lomboc
+-  Lombok
 
 
 ## Начало работы
