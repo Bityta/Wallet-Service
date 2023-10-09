@@ -12,14 +12,14 @@ class PersonTest {
 
     @Test
     void addBalanceTest() {
-        Person person = new Person();
+        Person person = new Person("Bityta", "qwerty");
         person.addMoney(10);
         assertEquals(10, person.getBalance());
     }
 
     @Test
     void diffBalanceTest() {
-        Person person = new Person();
+        Person person = new Person("Bityta", "qwerty");
         person.setBalance(10);
 
         person.diffMoney(10);
@@ -28,7 +28,7 @@ class PersonTest {
 
     @Test
     void addTransactionTest() {
-        Person person = new Person();
+        Person person = new Person("Bityta", "qwerty");
 
         UUID uuid = UUID.randomUUID();
 
@@ -49,7 +49,7 @@ class PersonTest {
     @Test
     void getBalanceTest() {
 
-        Person person = new Person();
+        Person person = new Person("Bityta", "qwerty");
         person.setBalance(10);
 
         assertEquals(10, person.getBalance());
@@ -58,8 +58,7 @@ class PersonTest {
 
     @Test
     void getUserNameTest() {
-        Person person = new Person();
-        person.setPassword("qwerty");
+        Person person = new Person("Bityta", "qwerty");
 
         assertEquals("qwerty", person.getPassword());
     }
@@ -67,9 +66,7 @@ class PersonTest {
 
     @Test
     void getPasswordTest() {
-        Person person = new Person();
-        person.setUsername("Bityta");
-
+        Person person = new Person("Bityta", "qwerty");
 
         assertEquals("Bityta", person.getUsername());
     }

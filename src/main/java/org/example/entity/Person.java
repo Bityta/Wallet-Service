@@ -13,7 +13,6 @@ import java.util.UUID;
  * Модель Пользователя, задающая его основые параметры и переменные.
  */
 
-@NoArgsConstructor
 @ToString
 public class Person {
 
