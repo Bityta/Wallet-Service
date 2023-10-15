@@ -150,32 +150,7 @@ public class PersonDataService implements PersonDataRepository {
     @Override
     public Optional<Person> getPerson(String username, String password) {
 
-        final String sql = "SELECT * FROM WallerService.Person WHERE username = ? and password = ?";
-
-        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
-
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, username);
-            preparedStatement.setString(2, password);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-
-                double balance = resultSet.getDouble(4);
-
-                Person person = new Person(username, password, balance);
-
-                return Optional.of(person);
-            } else {
-                System.out.println("Пользователя не найдено!");
-                return Optional.empty();
-            }
-
-        } catch (SQLException e) {
-            System.out.println("SQL Exception " + e.getMessage());
-            throw new RuntimeException();
-        }
+        return this.getPerson(username);
     }
 
     /**
@@ -237,4 +212,75 @@ public class PersonDataService implements PersonDataRepository {
         return this.getPerson(username).isPresent();
     }
 
+    /**
+     * Изменение балланс пользователя
+     *
+     * @param person  - пользователь
+     * @param balance - баланс
+     */
+    @Override
+    public void changeBalance(Person person, double balance) {
+
+        Optional<Person> newPerson = this.getPerson(person.getUsername());
+
+        if (newPerson.isPresent()) {
+            newPerson.get().setBalance(balance);
+            this.updatePerson(newPerson.get());
+        }
+
+    }
+
+    /**
+     * Обновление данных пользователя
+     *
+     * @param person - пользователь
+     */
+    @Override
+    public void updatePerson(Person person) {
+
+        final String sql = "UPDATE WallerService.Person SET username=?, password=?, balance=?";
+
+        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, person.getUsername());
+            preparedStatement.setString(2, person.getPassword());
+            preparedStatement.setDouble(3, person.getBalance());
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println("SQL Exception " + e.getMessage());
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public Optional<Long> getPersonId(Person person) {
+
+        final String sql = "SELECT * FROM WallerService.Person WHERE username=?";
+
+        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, person.getUsername());
+
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                long id = resultSet.getLong(1);
+
+
+                return Optional.of(id);
+            } else {
+                return Optional.empty();
+            }
+
+        } catch (SQLException e) {
+            System.out.println("SQL Exception " + e.getMessage());
+            throw new RuntimeException();
+        }
+    }
 }

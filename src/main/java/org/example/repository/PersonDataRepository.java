@@ -18,6 +18,14 @@ public interface PersonDataRepository {
      */
     Optional<Person> getPerson(long id);
 
+
+    /**
+     * Получение Id пользователя
+     * @param person - пользователь
+     * @return Id
+     */
+    Optional<Long> getPersonId(Person person);
+
     /**
      * Получение Пользователя по его полю Имя и Пароль.
      *
@@ -50,4 +58,17 @@ public interface PersonDataRepository {
      */
     boolean isContainPerson(String username);
 
+    /**
+     * Изменение Баланса Пользователя в БД
+     *
+     * @param balance - баланс
+     */
+    void changeBalance(Person person, double balance);
+
+    /**
+     * Обновление данных пользователя в БД
+     *
+     * @param person - пользователь
+     */
+    void updatePerson(Person person);
 }
