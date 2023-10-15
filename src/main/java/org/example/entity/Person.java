@@ -56,6 +56,19 @@ public class Person {
     }
 
     /**
+     * Конструктор
+     *
+     * @param username Имя пользователя.
+     * @param password Пароль пользователя.
+     * @param balance Баланс пользователя.
+     */
+    public Person(String username, String password, double balance) {
+        this.username = username;
+        this.password = password;
+        this.balance = balance;
+    }
+
+    /**
      * Увелечение баланса.
      *
      * @param balance Прибавляемая Сумма.
