@@ -4,9 +4,11 @@ import lombok.Getter;
 import org.example.entity.Person;
 import org.example.repository.PersonDataRepository;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.sql.*;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Сервис,который взаимодействует с данными всех пользователей, реализующий интерфей PersonDataRepository.
@@ -15,25 +17,48 @@ import java.util.Optional;
 public class PersonDataService implements PersonDataRepository {
 
     /**
-     * Уникальный ID, присваемый каждому пользователю.
-     */
-    public static long id;
-
-    /**
-     * Словарь, который ввиде ключа хранит уникальный ID пользователя,
-     * а значение - данные пользователя.
-     */
-    private final Map<Long, Person> personData = new HashMap<>();
-
-    /**
      * Экземпляр класса.
      */
     private static PersonDataService personDataService;
 
     /**
+     * Переменная содержащая URL - Базы Данных
+     */
+    private final String URL;
+
+    /**
+     * Переменная содержащая Имя Базы Данных
+     */
+    private final String USERNAME;
+
+    /**
+     * Переменная содержащая Пароль Базы Данных
+     */
+    private final String PASSWORD;
+
+
+    /**
      * Приватный конструктор.
+     * При создание экземпляра класа, без значения URL, USERNAME и PASSWORD
+     * из applications.properties
+     * При отсутвсие нужных полей - выскакивает ошибка.
      */
     private PersonDataService() {
+
+        final String path = "src/main/resources/application.properties";
+
+        Properties property = new Properties();
+
+        try (FileInputStream file = new FileInputStream(path)) {
+            property.load(file);
+            URL = property.getProperty("URL");
+            USERNAME = property.getProperty("USERNAME");
+            PASSWORD = property.getProperty("PASSWORD");
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     /**
@@ -49,13 +74,28 @@ public class PersonDataService implements PersonDataRepository {
     }
 
     /**
-     * Добавление Пользователя в баззу данныхю
+     * Добавление Пользователя в базу данных
      *
      * @param person - Добавляемый Пользователь.
      */
     @Override
     public void addPerson(Person person) {
-        personData.put(++id, person);
+
+        final String sql = "INSERT INTO Person(username, password, balance) "
+                + "VALUES(?,?,?)";
+
+        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setString(1, person.getUsername());
+            preparedStatement.setString(2, person.getPassword());
+            preparedStatement.setDouble(3, person.getBalance());
+
+
+        } catch (SQLException e) {
+            System.out.println("SQL Exception " + e.getMessage());
+        }
     }
 
     /**
@@ -66,7 +106,36 @@ public class PersonDataService implements PersonDataRepository {
      */
     @Override
     public Optional<Person> getPerson(long id) {
-        return Optional.ofNullable(personData.get(id));
+
+
+        final String sql = "SELECT * FROM Person WHERE id = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setLong(1, id);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                String username = resultSet.getString(2);
+                String password = resultSet.getString(3);
+                double balance = resultSet.getDouble(4);
+
+                Person person = new Person(username, password, balance);
+
+                return Optional.of(person);
+            } else {
+                System.out.println("Пользователя не найдено!");
+                return Optional.empty();
+            }
+
+        } catch (SQLException e) {
+            System.out.println("SQL Exception " + e.getMessage());
+            return Optional.empty();
+        }
+
     }
 
     /**
@@ -78,14 +147,33 @@ public class PersonDataService implements PersonDataRepository {
      */
     @Override
     public Optional<Person> getPerson(String username, String password) {
-        for (Map.Entry<Long, Person> value : personData.entrySet()) {
-            if (value.getValue().getUsername().equals(username)
-                    && value.getValue().getPassword().equals(password)) {
-                return Optional.of(value.getValue());
+
+        final String sql = "SELECT * FROM Person WHERE username = ? and password = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, password);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                double balance = resultSet.getDouble(4);
+
+                Person person = new Person(username, password, balance);
+
+                return Optional.of(person);
+            } else {
+                System.out.println("Пользователя не найдено!");
+                return Optional.empty();
             }
 
+        } catch (SQLException e) {
+            System.out.println("SQL Exception " + e.getMessage());
+            return Optional.empty();
         }
-        return Optional.empty();
     }
 
     /**
@@ -95,13 +183,34 @@ public class PersonDataService implements PersonDataRepository {
      *                 Данные пользователя.
      */
     private Optional<Person> getPerson(String username) {
-        for (Map.Entry<Long, Person> value : personData.entrySet()) {
-            if (value.getValue().getUsername().equals(username)) {
-                return Optional.of(value.getValue());
+
+        final String sql = "SELECT * FROM Person WHERE username = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, username);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                String password = resultSet.getString(3);
+                double balance = resultSet.getDouble(4);
+
+                Person person = new Person(username, password, balance);
+
+                return Optional.of(person);
+            } else {
+                System.out.println("Пользователя не найдено!");
+                return Optional.empty();
             }
 
+        } catch (SQLException e) {
+            System.out.println("SQL Exception " + e.getMessage());
+            return Optional.empty();
         }
-        return Optional.empty();
+
     }
 
     /**
@@ -112,11 +221,7 @@ public class PersonDataService implements PersonDataRepository {
      */
     @Override
     public boolean isContainPerson(Person person) {
-
-        for (Map.Entry<Long, Person> value : personData.entrySet()) {
-            if (value.getValue() == person) return true;
-        }
-        return false;
+        return this.getPerson(person.getUsername(), person.getPassword()).isPresent();
     }
 
     /**
@@ -128,7 +233,7 @@ public class PersonDataService implements PersonDataRepository {
     @Override
     public boolean isContainPerson(String username) {
 
-        return getPerson(username).isPresent();
+        return this.getPerson(username).isPresent();
     }
 
 }

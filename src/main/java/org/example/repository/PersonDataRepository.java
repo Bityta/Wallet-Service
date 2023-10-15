@@ -2,6 +2,7 @@ package org.example.repository;
 
 import org.example.entity.Person;
 
+import java.io.IOException;
 import java.util.Optional;
 
 /**
@@ -31,7 +32,7 @@ public interface PersonDataRepository {
      *
      * @param person - Добавляемый Пользователь.
      */
-    void addPerson(Person person);
+    void addPerson(Person person) throws IOException;
 
     /**
      * Проверка на содержание Пользователя в Базе данных.
