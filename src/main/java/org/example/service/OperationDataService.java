@@ -5,25 +5,24 @@ import org.example.entity.Person;
 import org.example.repository.OperationDataRepository;
 import org.example.utils.Operation;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.*;
 
 /**
  * Сервис,который взаимодействует с данными всех операций, реализующий интерфей OperationDataRepository.
  */
+@Getter
 public class OperationDataService implements OperationDataRepository {
 
     /**
-     * Словарь, который в виде ключа хранит Имя пользователя,
-     * а в виде значения - массив всех операций,
-     * производимых пользователем. Сохраняемые данные: уникальный идентификатор операции, операция, сумма операции.
-
+     * Сервис таблицы с людьми.
      */
-    @Getter
-    private final Map<String, List<Map<UUID, Map<Operation, Double>>>> operationData
-            = new HashMap<>();
+    private PersonDataService personDataService;
 
     /**
      * Экземпляр класса.
@@ -31,13 +30,46 @@ public class OperationDataService implements OperationDataRepository {
     private static OperationDataService operationDataService;
 
     /**
+     * Переменная содержащая URL - Базы Данных
+     */
+    private final String URL;
+
+    /**
+     * Переменная содержащая Имя Базы Данных
+     */
+    private final String USERNAME;
+
+    /**
+     * Переменная содержащая Пароль Базы Данных
+     */
+    private final String PASSWORD;
+
+
+    /**
      * Приватный конструктор.
+     * При создание экземпляра класа, без значения URL, USERNAME и PASSWORD
+     * из applications.properties
+     * При отсутвсие нужных полей - выскакивает ошибка.
      */
     private OperationDataService() {
+        final String path = "src/main/resources/application.properties";
+
+        Properties property = new Properties();
+
+        try (FileInputStream file = new FileInputStream(path)) {
+            property.load(file);
+            URL = property.getProperty("URL");
+            USERNAME = property.getProperty("USERNAME");
+            PASSWORD = property.getProperty("PASSWORD");
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
      * Получения экземпляра данного класса. (Singleton)
+     *
      * @return Экземпляр класса.
      */
     public static OperationDataService getOperationDataService() {
@@ -49,25 +81,49 @@ public class OperationDataService implements OperationDataRepository {
 
     /**
      * Реалезация класса, добавляющий операцию в базу данных.
-     * @param person Пользователь.
+     *
+     * @param person    Пользователь.
      * @param operation Операция.
-     * @param money Сумма операции.
+     * @param money     Сумма операции.
      */
     @Override
-    public void addOperationData(Person person, Operation operation, double money) {
+    public void addOperation(Person person, Operation operation, double money) {
 
-        Map<Operation, Double> operationManeyHashMap = new HashMap<>();
-        Map<UUID, Map<Operation, Double>> UUIDHashMap = new HashMap<>();
-        operationManeyHashMap.put(operation, money);
-        UUIDHashMap.put(UUID.randomUUID(), operationManeyHashMap);
-        person.addTransaction(UUIDHashMap);
+//        Map<Operation, Double> operationManeyHashMap = new HashMap<>();
+//        Map<UUID, Map<Operation, Double>> UUIDHashMap = new HashMap<>();
+//        operationManeyHashMap.put(operation, money);
+//        UUIDHashMap.put(UUID.randomUUID(), operationManeyHashMap);
+//        person.addTransaction(UUIDHashMap);
 
-        operationData.put(person.getUsername(), person.getTransactions());
+//        operationData.put(person.getUsername(), person.getTransactions());
 
+        final String sql = "INSERT INTO WallerService.operation(id, idperson, operation, money)"
+                + "VALUES(?,?,?,?)";
+
+        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, String.valueOf(UUID.randomUUID()));
+            preparedStatement.setLong(2, personDataService.getPersonId(person).get());
+            preparedStatement.setString(3, String.valueOf(operation));
+            preparedStatement.setDouble(4, money);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println("SQL Exception " + e.getMessage());
+            throw new RuntimeException();
+        }
 
         switch (operation) {
-            case credit, replenishment -> person.addMoney(money);
-            case withdraw -> person.diffMoney(money);
+            case credit, replenishment -> {
+                person.addMoney(money);
+                personDataService.updatePerson(person);
+            }
+            case withdraw -> {
+                person.diffMoney(money);
+                personDataService.updatePerson(person);
+            }
 
         }
     }

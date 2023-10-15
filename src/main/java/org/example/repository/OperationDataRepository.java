@@ -15,5 +15,5 @@ public interface OperationDataRepository {
      * @param operation Операция.
      * @param balance   Сумма операции.
      */
-    void addOperationData(Person person, Operation operation, double balance);
+    void addOperation(Person person, Operation operation, double balance);
 }
