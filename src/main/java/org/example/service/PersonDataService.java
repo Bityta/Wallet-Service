@@ -81,7 +81,7 @@ public class PersonDataService implements PersonDataRepository {
     @Override
     public void addPerson(Person person) {
 
-        final String sql = "INSERT INTO Person(username, password, balance) "
+        final String sql = "INSERT INTO WallerService.Person(username, password, balance) "
                 + "VALUES(?,?,?)";
 
         try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
@@ -92,6 +92,7 @@ public class PersonDataService implements PersonDataRepository {
             preparedStatement.setString(2, person.getPassword());
             preparedStatement.setDouble(3, person.getBalance());
 
+            preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
             System.out.println("SQL Exception " + e.getMessage());
@@ -109,7 +110,7 @@ public class PersonDataService implements PersonDataRepository {
     public Optional<Person> getPerson(long id) {
 
 
-        final String sql = "SELECT * FROM Person WHERE id = ?";
+        final String sql = "SELECT * FROM WallerService.Person WHERE id = ?";
 
         try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
 
@@ -149,7 +150,7 @@ public class PersonDataService implements PersonDataRepository {
     @Override
     public Optional<Person> getPerson(String username, String password) {
 
-        final String sql = "SELECT * FROM Person WHERE username = ? and password = ?";
+        final String sql = "SELECT * FROM WallerService.Person WHERE username = ? and password = ?";
 
         try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
 
@@ -185,7 +186,7 @@ public class PersonDataService implements PersonDataRepository {
      */
     private Optional<Person> getPerson(String username) {
 
-        final String sql = "SELECT * FROM Person WHERE username = ?";
+        final String sql = "SELECT * FROM WallerService.Person WHERE username = ?";
 
         try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
 
@@ -203,7 +204,6 @@ public class PersonDataService implements PersonDataRepository {
 
                 return Optional.of(person);
             } else {
-                System.out.println("Пользователя не найдено!");
                 return Optional.empty();
             }
 

@@ -158,7 +158,7 @@ public class BankApplication {
 
                         }
                     }
-                    operationDataService.addOperationData(person, Operation.withdraw, sum);
+                    operationDataService.addOperation(person, Operation.withdraw, sum);
 
 
                 }
@@ -185,7 +185,7 @@ public class BankApplication {
                         }
                     }
 
-                    operationDataService.addOperationData(person, Operation.replenishment, sum);
+                    operationDataService.addOperation(person, Operation.replenishment, sum);
                 }
                 case ("3") -> {
 
@@ -209,7 +209,7 @@ public class BankApplication {
                         }
                     }
 
-                    operationDataService.addOperationData(person, Operation.credit, Double.parseDouble(money));
+                    operationDataService.addOperation(person, Operation.credit, Double.parseDouble(money));
                 }
                 case ("4") -> printStatement(person);
                 case ("0") -> {
