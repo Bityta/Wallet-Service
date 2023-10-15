@@ -95,6 +95,7 @@ public class PersonDataService implements PersonDataRepository {
 
         } catch (SQLException e) {
             System.out.println("SQL Exception " + e.getMessage());
+            throw new RuntimeException();
         }
     }
 
@@ -133,7 +134,7 @@ public class PersonDataService implements PersonDataRepository {
 
         } catch (SQLException e) {
             System.out.println("SQL Exception " + e.getMessage());
-            return Optional.empty();
+            throw new RuntimeException();
         }
 
     }
@@ -172,7 +173,7 @@ public class PersonDataService implements PersonDataRepository {
 
         } catch (SQLException e) {
             System.out.println("SQL Exception " + e.getMessage());
-            return Optional.empty();
+            throw new RuntimeException();
         }
     }
 
@@ -208,7 +209,7 @@ public class PersonDataService implements PersonDataRepository {
 
         } catch (SQLException e) {
             System.out.println("SQL Exception " + e.getMessage());
-            return Optional.empty();
+            throw new RuntimeException();
         }
 
     }
