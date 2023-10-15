@@ -73,9 +73,10 @@ class PersonTest {
 
     @Test
     void constructorTest() {
-        Person person = new Person("Bityta", "qwerty");
+        Person person = new Person("Bityta", "qwerty", 20.1);
         assertEquals("Bityta", person.getUsername());
         assertEquals("qwerty", person.getPassword());
+        assertEquals(20.1, person.getBalance());
     }
 
     @Test
