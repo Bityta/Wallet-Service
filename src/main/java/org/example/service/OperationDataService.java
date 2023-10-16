@@ -7,10 +7,7 @@ import org.example.utils.Operation;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
 
 /**
@@ -22,7 +19,7 @@ public class OperationDataService implements OperationDataRepository {
     /**
      * Сервис таблицы с людьми.
      */
-    private PersonDataService personDataService;
+    private final PersonDataService personDataService = PersonDataService.getPersonDataService();
 
     /**
      * Экземпляр класса.
@@ -89,14 +86,6 @@ public class OperationDataService implements OperationDataRepository {
     @Override
     public void addOperation(Person person, Operation operation, double money) {
 
-//        Map<Operation, Double> operationManeyHashMap = new HashMap<>();
-//        Map<UUID, Map<Operation, Double>> UUIDHashMap = new HashMap<>();
-//        operationManeyHashMap.put(operation, money);
-//        UUIDHashMap.put(UUID.randomUUID(), operationManeyHashMap);
-//        person.addTransaction(UUIDHashMap);
-
-//        operationData.put(person.getUsername(), person.getTransactions());
-
         final String sql = "INSERT INTO WallerService.operation(id, idperson, operation, money)"
                 + "VALUES(?,?,?,?)";
 
@@ -128,5 +117,34 @@ public class OperationDataService implements OperationDataRepository {
         }
     }
 
+    @Override
+    public void getOperation(Person person) {
 
+        final String sql = "SELECT * FROM WallerService.operation WHERE idperson=?";
+
+        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+
+
+            long id = personDataService.getPersonId(person).get();
+
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setLong(1, id);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+
+            while (resultSet.next()) {
+
+                System.out.println(resultSet.getString(1) + " " + resultSet.getString(3) + " " + resultSet.getDouble(4));
+
+
+            }
+
+
+        } catch (SQLException e) {
+            System.out.println("SQL Exception " + e.getMessage());
+            throw new RuntimeException();
+        }
+
+    }
 }

@@ -238,7 +238,7 @@ public class PersonDataService implements PersonDataRepository {
     @Override
     public void updatePerson(Person person) {
 
-        final String sql = "UPDATE WallerService.Person SET username=?, password=?, balance=?";
+        final String sql = "UPDATE WallerService.Person SET username=?, password=?, balance=? WHERE username=?";
 
         try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
 
@@ -246,6 +246,8 @@ public class PersonDataService implements PersonDataRepository {
             preparedStatement.setString(1, person.getUsername());
             preparedStatement.setString(2, person.getPassword());
             preparedStatement.setDouble(3, person.getBalance());
+            preparedStatement.setString(4, person.getUsername());
+
 
             preparedStatement.executeUpdate();
 

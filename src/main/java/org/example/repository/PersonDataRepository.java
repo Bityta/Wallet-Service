@@ -21,6 +21,7 @@ public interface PersonDataRepository {
 
     /**
      * Получение Id пользователя
+     *
      * @param person - пользователь
      * @return Id
      */

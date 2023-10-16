@@ -158,6 +158,8 @@ public class BankApplication {
 
                         }
                     }
+
+                    sum = Double.parseDouble(money);
                     operationDataService.addOperation(person, Operation.withdraw, sum);
 
 
@@ -185,6 +187,8 @@ public class BankApplication {
                         }
                     }
 
+                    sum = Double.parseDouble(money);
+
                     operationDataService.addOperation(person, Operation.replenishment, sum);
                 }
                 case ("3") -> {
@@ -209,6 +213,7 @@ public class BankApplication {
                         }
                     }
 
+                    sum = Double.parseDouble(money);
                     operationDataService.addOperation(person, Operation.credit, Double.parseDouble(money));
                 }
                 case ("4") -> printStatement(person);
@@ -268,16 +273,7 @@ public class BankApplication {
         System.out.println("\t\t\t" + "#".repeat(30) + "\n");
         System.out.println("\t\t\tИдентификатор\t\t\t\tДействие\t Сумма\n");
 
-        for (Map<UUID, Map<Operation, Double>> i : operationDataService.getOperationData().get(username)) {
-
-            for (Map.Entry<UUID, Map<Operation, Double>> j : i.entrySet()) {
-                System.out.print(j.getKey() + "  ");
-
-                for (Map.Entry<Operation, Double> k : j.getValue().entrySet()) {
-                    System.out.println(k.getKey() + "\t\t" + k.getValue());
-                }
-            }
-        }
+        operationDataService.getOperation(person);
 
 
     }
