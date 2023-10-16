@@ -237,6 +237,7 @@ public class BankApplication {
      */
     private void printSelectionMenu() {
 
+
         System.out.println("\t 1 - Войти");
         System.out.println("\t 2 - Зарегестрироваться");
         System.out.println("\t 0 - Завершить работу");
