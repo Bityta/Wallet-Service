@@ -6,9 +6,9 @@ import org.example.service.PersonDataService;
 import org.example.utils.Operation;
 import org.example.utils.Validator;
 
-import java.util.Map;
+
 import java.util.Scanner;
-import java.util.UUID;
+
 
 /**
  * Отвечает за данные, вывводимые в консоль и навигацию в приложении.
@@ -267,7 +267,6 @@ public class BankApplication {
      */
     private void printStatement(Person person) {
 
-        String username = person.getUsername();
 
         System.out.println("\n\t\t\t\tВыписка об операциям");
         System.out.println("\t\t\t" + "#".repeat(30) + "\n");

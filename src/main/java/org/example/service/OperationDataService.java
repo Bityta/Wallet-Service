@@ -86,8 +86,7 @@ public class OperationDataService implements OperationDataRepository {
     @Override
     public void addOperation(Person person, Operation operation, double money) {
 
-        final String sql = "INSERT INTO WallerService.operation(id, idperson, operation, money)"
-                + "VALUES(?,?,?,?)";
+        final String sql = "INSERT INTO WallerService.operation(id, idperson, operation, money)" + "VALUES(?,?,?,?)";
 
         try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
 
@@ -120,6 +119,7 @@ public class OperationDataService implements OperationDataRepository {
 
     /**
      * Вывод всех операции
+     *
      * @param person - пользователь
      */
     @Override
