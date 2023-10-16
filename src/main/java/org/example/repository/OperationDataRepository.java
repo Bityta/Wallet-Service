@@ -24,5 +24,5 @@ public interface OperationDataRepository {
      *
      * @param person - пользователь
      */
-    void getOperation(Person person);
+    void printOperation(Person person);
 }

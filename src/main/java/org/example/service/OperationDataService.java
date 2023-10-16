@@ -117,8 +117,13 @@ public class OperationDataService implements OperationDataRepository {
         }
     }
 
+
+    /**
+     * Вывод всех операции
+     * @param person - пользователь
+     */
     @Override
-    public void getOperation(Person person) {
+    public void printOperation(Person person) {
 
         final String sql = "SELECT * FROM WallerService.operation WHERE idperson=?";
 

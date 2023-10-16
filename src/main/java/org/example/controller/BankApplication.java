@@ -273,7 +273,7 @@ public class BankApplication {
         System.out.println("\t\t\t" + "#".repeat(30) + "\n");
         System.out.println("\t\t\tИдентификатор\t\t\t\tДействие\t Сумма\n");
 
-        operationDataService.getOperation(person);
+        operationDataService.printOperation(person);
 
 
     }
