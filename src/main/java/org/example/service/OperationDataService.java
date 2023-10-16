@@ -49,7 +49,7 @@ public class OperationDataService implements OperationDataRepository {
      * При отсутвсие нужных полей - выскакивает ошибка.
      */
     private OperationDataService() {
-        final String path = "src/main/resources/application.properties";
+        final String path = "/app/resources/application.properties";
 
         Properties property = new Properties();
 

@@ -45,7 +45,7 @@ public class PersonDataService implements PersonDataRepository {
      */
     private PersonDataService() {
 
-        final String path = "src/main/resources/application.properties";
+        final String path = "/app/resources/application.properties";
 
         Properties property = new Properties();
 
