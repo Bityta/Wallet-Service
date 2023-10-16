@@ -3,12 +3,11 @@ package org.example.service;
 import lombok.Getter;
 import org.example.entity.Person;
 import org.example.repository.PersonDataRepository;
+import org.example.utils.ConnectionManager;
 
-import java.io.FileInputStream;
-import java.io.IOException;
+
 import java.sql.*;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Сервис,который взаимодействует с данными всех пользователей, реализующий интерфей PersonDataRepository.
@@ -21,44 +20,11 @@ public class PersonDataService implements PersonDataRepository {
      */
     private static PersonDataService personDataService;
 
-    /**
-     * Переменная содержащая URL - Базы Данных
-     */
-    private final String URL;
-
-    /**
-     * Переменная содержащая Имя Базы Данных
-     */
-    private final String USERNAME;
-
-    /**
-     * Переменная содержащая Пароль Базы Данных
-     */
-    private final String PASSWORD;
-
 
     /**
      * Приватный конструктор.
-     * При создание экземпляра класа, без значения URL, USERNAME и PASSWORD
-     * из applications.properties
-     * При отсутвсие нужных полей - выскакивает ошибка.
      */
     private PersonDataService() {
-
-        final String path = "src/main/resources/application.properties";
-
-        Properties property = new Properties();
-
-        try (FileInputStream file = new FileInputStream(path)) {
-            property.load(file);
-            URL = property.getProperty("URL") + property.getProperty("NAME");
-            USERNAME = property.getProperty("USERNAME");
-            PASSWORD = property.getProperty("PASSWORD");
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
     }
 
     /**
@@ -84,7 +50,12 @@ public class PersonDataService implements PersonDataRepository {
         final String sql = "INSERT INTO WallerService.Person(username, password, balance) "
                 + "VALUES(?,?,?)";
 
-        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+        Connection connection = null;
+
+        try {
+
+            connection = ConnectionManager.open();
+            connection.setAutoCommit(false);
 
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
@@ -94,9 +65,33 @@ public class PersonDataService implements PersonDataRepository {
 
             preparedStatement.executeUpdate();
 
+            connection.commit();
+            System.out.println("\nДействие успешно завершенр.");
+
         } catch (SQLException e) {
-            System.out.println("SQL Exception " + e.getMessage());
-            throw new RuntimeException();
+            System.err.println("Произошла ошибка " + e.getMessage());
+
+            try {
+
+                connection.rollback();
+                System.err.println("Действие отменено");
+
+
+            } catch (SQLException ex) {
+                System.err.println("Ошибка при откате действия");
+            }
+
+        } finally {
+            try {
+
+                if (connection != null) {
+                    connection.close();
+
+
+                }
+            } catch (SQLException closeException) {
+                System.err.println("Ошибка при закрытии соединения: " + closeException.getMessage());
+            }
         }
     }
 
@@ -112,7 +107,14 @@ public class PersonDataService implements PersonDataRepository {
 
         final String sql = "SELECT * FROM WallerService.Person WHERE id = ?";
 
-        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+        Connection connection = null;
+        Person person = null;
+
+        try {
+
+            connection = ConnectionManager.open();
+            connection.setAutoCommit(false);
+
 
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setLong(1, id);
@@ -125,18 +127,39 @@ public class PersonDataService implements PersonDataRepository {
                 String password = resultSet.getString(3);
                 double balance = resultSet.getDouble(4);
 
-                Person person = new Person(username, password, balance);
+                person = new Person(username, password, balance);
 
-                return Optional.of(person);
-            } else {
-                System.out.println("Пользователя не найдено!");
-                return Optional.empty();
             }
 
+            connection.commit();
+
         } catch (SQLException e) {
-            System.out.println("SQL Exception " + e.getMessage());
-            throw new RuntimeException();
+            System.err.println("Произошла ошибка " + e.getMessage());
+
+            try {
+
+                connection.rollback();
+                System.err.println("Действие отменено");
+
+
+            } catch (SQLException ex) {
+                System.err.println("Ошибка при откате действия");
+            }
+
+        } finally {
+            try {
+
+                if (connection != null) {
+                    connection.close();
+
+                }
+            } catch (SQLException closeException) {
+                System.err.println("Ошибка при закрытии соединения: " + closeException.getMessage());
+            }
         }
+
+        System.out.println("Пользователя не найдено!");
+        return Optional.ofNullable(person);
 
     }
 
@@ -163,7 +186,12 @@ public class PersonDataService implements PersonDataRepository {
 
         final String sql = "SELECT * FROM WallerService.Person WHERE username = ?";
 
-        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+        Connection connection = null;
+        Person person = null;
+
+        try {
+            connection = ConnectionManager.open();
+            connection.setAutoCommit(false);
 
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, username);
@@ -175,17 +203,38 @@ public class PersonDataService implements PersonDataRepository {
                 String password = resultSet.getString(3);
                 double balance = resultSet.getDouble(4);
 
-                Person person = new Person(username, password, balance);
+                person = new Person(username, password, balance);
 
-                return Optional.of(person);
-            } else {
-                return Optional.empty();
             }
+            connection.commit();
 
         } catch (SQLException e) {
-            System.out.println("SQL Exception " + e.getMessage());
-            throw new RuntimeException();
+            System.err.println("Произошла ошибка " + e.getMessage());
+
+            try {
+
+                connection.rollback();
+                System.err.println("Действие отменено");
+
+
+            } catch (SQLException ex) {
+                System.err.println("Ошибка при откате действия");
+            }
+
+        } finally {
+            try {
+
+                if (connection != null) {
+                    connection.close();
+
+
+                }
+            } catch (SQLException closeException) {
+                System.err.println("Ошибка при закрытии соединения: " + closeException.getMessage());
+            }
         }
+
+        return Optional.ofNullable(person);
 
     }
 
@@ -240,7 +289,11 @@ public class PersonDataService implements PersonDataRepository {
 
         final String sql = "UPDATE WallerService.Person SET username=?, password=?, balance=? WHERE username=?";
 
-        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+        Connection connection = null;
+        try {
+
+            connection = ConnectionManager.open();
+            connection.setAutoCommit(false);
 
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, person.getUsername());
@@ -251,18 +304,51 @@ public class PersonDataService implements PersonDataRepository {
 
             preparedStatement.executeUpdate();
 
+            connection.commit();
+
         } catch (SQLException e) {
-            System.out.println("SQL Exception " + e.getMessage());
-            throw new RuntimeException();
+            System.err.println("Произошла ошибка " + e.getMessage());
+
+            try {
+
+                connection.rollback();
+                System.err.println("Действие отменено");
+
+
+            } catch (SQLException ex) {
+                System.err.println("Ошибка при откате действия");
+            }
+
+        } finally {
+            try {
+
+                if (connection != null) {
+                    connection.close();
+
+                }
+            } catch (SQLException closeException) {
+                System.err.println("Ошибка при закрытии соединения: " + closeException.getMessage());
+            }
         }
     }
 
+
+    /**
+     * Получение ИД пользователя по его сущности
+     *
+     * @param person - пользователь
+     * @return если нашелся - id, иначе Empty
+     */
     @Override
     public Optional<Long> getPersonId(Person person) {
 
         final String sql = "SELECT * FROM WallerService.Person WHERE username=?";
 
-        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+        Connection connection = null;
+        long id = 0L;
+        try {
+            connection = ConnectionManager.open();
+            connection.setAutoCommit(false);
 
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, person.getUsername());
@@ -272,17 +358,37 @@ public class PersonDataService implements PersonDataRepository {
 
             if (resultSet.next()) {
 
-                long id = resultSet.getLong(1);
+                id = resultSet.getLong(1);
 
-
-                return Optional.of(id);
-            } else {
-                return Optional.empty();
             }
 
+            connection.commit();
         } catch (SQLException e) {
-            System.out.println("SQL Exception " + e.getMessage());
-            throw new RuntimeException();
+            System.err.println("Произошла ошибка " + e.getMessage());
+
+            try {
+                connection.rollback();
+                System.err.println("Действие отменено");
+
+            } catch (SQLException ex) {
+                System.err.println("Ошибка при откате действия");
+            }
+
+        } finally {
+            try {
+
+                if (connection != null) {
+                    connection.close();
+
+
+                }
+            } catch (SQLException closeException) {
+                System.err.println("Ошибка при закрытии соединения: " + closeException.getMessage());
+            }
         }
+
+
+        return Optional.of(id);
+
     }
 }

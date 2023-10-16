@@ -1,12 +1,12 @@
 package org.example.service;
 
+
 import lombok.Getter;
 import org.example.entity.Person;
 import org.example.repository.OperationDataRepository;
+import org.example.utils.ConnectionManager;
 import org.example.utils.Operation;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 
@@ -26,42 +26,12 @@ public class OperationDataService implements OperationDataRepository {
      */
     private static OperationDataService operationDataService;
 
-    /**
-     * Переменная содержащая URL - Базы Данных
-     */
-    private final String URL;
-
-    /**
-     * Переменная содержащая Имя Базы Данных
-     */
-    private final String USERNAME;
-
-    /**
-     * Переменная содержащая Пароль Базы Данных
-     */
-    private final String PASSWORD;
-
 
     /**
      * Приватный конструктор.
-     * При создание экземпляра класа, без значения URL, USERNAME и PASSWORD
-     * из applications.properties
-     * При отсутвсие нужных полей - выскакивает ошибка.
      */
     private OperationDataService() {
-        final String path = "src/main/resources/application.properties";
 
-        Properties property = new Properties();
-
-        try (FileInputStream file = new FileInputStream(path)) {
-            property.load(file);
-            URL = property.getProperty("URL") + property.getProperty("NAME");
-            USERNAME = property.getProperty("USERNAME");
-            PASSWORD = property.getProperty("PASSWORD");
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /**
@@ -88,19 +58,51 @@ public class OperationDataService implements OperationDataRepository {
 
         final String sql = "INSERT INTO WallerService.operation(id, idperson, operation, money)" + "VALUES(?,?,?,?)";
 
-        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+        Connection connection = null;
+        try {
+
+            connection = ConnectionManager.open();
+            connection.setAutoCommit(false);
+
+            Optional<Long> sendPerson = personDataService.getPersonId(person);
+
+            if (sendPerson.isEmpty()) {
+                System.err.println("Пользователь не найден");
+                return;
+            }
 
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, String.valueOf(UUID.randomUUID()));
-            preparedStatement.setLong(2, personDataService.getPersonId(person).get());
+            preparedStatement.setLong(2, sendPerson.get());
             preparedStatement.setString(3, String.valueOf(operation));
             preparedStatement.setDouble(4, money);
 
             preparedStatement.executeUpdate();
 
+            connection.commit();
+            System.out.println("\nДействие успешно завершено.");
+
         } catch (SQLException e) {
-            System.out.println("SQL Exception " + e.getMessage());
-            throw new RuntimeException();
+            System.err.println("Произошла ошибка " + e.getMessage());
+
+            try {
+                connection.rollback();
+                System.err.println("Действие отменено");
+
+            } catch (SQLException ex) {
+                System.err.println("Ошибка при откате действия");
+            }
+
+        } finally {
+            try {
+
+                if (connection != null) {
+                    connection.close();
+
+                }
+            } catch (SQLException closeException) {
+                System.err.println("Ошибка при закрытии соединения: " + closeException.getMessage());
+            }
         }
 
         switch (operation) {
@@ -127,10 +129,20 @@ public class OperationDataService implements OperationDataRepository {
 
         final String sql = "SELECT * FROM WallerService.operation WHERE idperson=?";
 
-        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+        Connection connection = null;
 
+        try {
+            connection = ConnectionManager.open();
 
-            long id = personDataService.getPersonId(person).get();
+            connection.setAutoCommit(false);
+
+            Optional<Long> sendPerson = personDataService.getPersonId(person);
+
+            if (sendPerson.isEmpty()) {
+                System.err.println("Пользователь не найден");
+                return;
+            }
+            long id = sendPerson.get();
 
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setLong(1, id);
@@ -139,16 +151,35 @@ public class OperationDataService implements OperationDataRepository {
 
 
             while (resultSet.next()) {
-
                 System.out.println(resultSet.getString(1) + " " + resultSet.getString(3) + " " + resultSet.getDouble(4));
-
 
             }
 
+            connection.commit();
+            System.out.println("\nДействие успешно завершено" +
+                    ".");
 
         } catch (SQLException e) {
-            System.out.println("SQL Exception " + e.getMessage());
-            throw new RuntimeException();
+            System.err.println("Произошла ошибка " + e.getMessage());
+
+            try {
+                connection.rollback();
+                System.err.println("Действие отменено");
+
+            } catch (SQLException ex) {
+                System.err.println("Ошибка при откате действия");
+            }
+
+        } finally {
+            try {
+
+                if (connection != null) {
+                    connection.close();
+
+                }
+            } catch (SQLException closeException) {
+                System.err.println("Ошибка при закрытии соединения: " + closeException.getMessage());
+            }
         }
 
     }

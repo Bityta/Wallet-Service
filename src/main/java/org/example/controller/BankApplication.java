@@ -1,6 +1,6 @@
 package org.example.controller;
 
-import org.example.MirgationDatabase.LiquibaseDemo;
+import org.example.mirgationDatabase.LiquibaseDemo;
 import org.example.entity.Person;
 import org.example.service.OperationDataService;
 import org.example.service.PersonDataService;

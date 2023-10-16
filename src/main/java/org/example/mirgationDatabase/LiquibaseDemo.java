@@ -1,21 +1,20 @@
-package org.example.MirgationDatabase;
+package org.example.mirgationDatabase;
+
 
 import liquibase.Liquibase;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
-import liquibase.exception.DatabaseException;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
+import org.example.utils.ConnectionManager;
+import org.example.utils.PropertiesUtil;
 
-import java.io.FileInputStream;
-import java.io.IOException;
+
 import java.sql.Connection;
-import java.sql.DriverManager;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
 
 /**
  * Класс миграции База данных
@@ -24,24 +23,9 @@ import java.util.Properties;
 public class LiquibaseDemo {
 
     /**
-     * Переменная содержащая URL - Базы Данных
+     * Ключ из файла application.properties
      */
-    private final String URL;
-
-    /**
-     * Переменная содержащая Имя Базы Данных
-     */
-    private final String USERNAME;
-
-    /**
-     * Переменная содержащая Пароль Базы Данных
-     */
-    private final String PASSWORD;
-
-    /**
-     * Путь до ChangeLog
-     */
-    private final String PATH;
+    private static final String PATCH_KEY = "lb.patch";
 
     /**
      * Экземпляр класса
@@ -50,26 +34,9 @@ public class LiquibaseDemo {
 
     /**
      * Приватный конструктор.
-     * При создание экземпляра класа, без значения URL, USERNAME, PASSWORD и PATH
-     * из applications.properties
-     * При отсутвсие нужных полей - выскакивает ошибка.
      */
     private LiquibaseDemo() {
 
-        final String path = "src/main/resources/application.properties";
-
-        Properties property = new Properties();
-
-        try (FileInputStream file = new FileInputStream(path)) {
-            property.load(file);
-            URL = property.getProperty("URL") + property.getProperty("NAME");
-            USERNAME = property.getProperty("USERNAME");
-            PASSWORD = property.getProperty("PASSWORD");
-            PATH = property.getProperty("PATH");
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /**
@@ -93,29 +60,25 @@ public class LiquibaseDemo {
 
         try {
 
-            connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+            connection = ConnectionManager.open();
             connection.setAutoCommit(false);
 
             final String sql = "CREATE SCHEMA IF NOT EXISTS Service";
             Statement statement = connection.createStatement();
             statement.execute(sql);
             connection.commit();
-            System.out.println("Действие успешно завершена.");
+            System.out.println("Действие успешно завершено");
 
 
         } catch (SQLException e) {
             System.err.println("Произошла ошибка " + e.getMessage());
 
-            if (connection != null) {
+            try {
+                connection.rollback();
+                System.err.println("Действие отменено");
 
-                try {
-                    connection.rollback();
-                    System.err.println("Действие отменено");
-
-                } catch (SQLException ex) {
-                    System.err.println("Ошибка при откате действия");
-                }
-
+            } catch (SQLException ex) {
+                System.err.println("Ошибка при откате действия");
             }
 
         } finally {
@@ -127,7 +90,8 @@ public class LiquibaseDemo {
                     try {
                         database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
                         database.setLiquibaseSchemaName("service");
-                        Liquibase liquibase = new Liquibase(PATH, new ClassLoaderResourceAccessor(), database);
+                        Liquibase liquibase = new Liquibase(PropertiesUtil.get(PATCH_KEY), new ClassLoaderResourceAccessor(), database);
+
                         liquibase.update();
                         connection.close();
                     } catch (LiquibaseException e) {

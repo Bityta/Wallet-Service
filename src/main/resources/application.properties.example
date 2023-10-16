@@ -1,3 +1,4 @@
-URL=
-USERNAME=
-PASSWORD=
+db.url=jdbc:dbc:postgresql://localhost:****/nameDB
+db.username=
+db.password=
+lb.patch=db/changelog/changelog.xml
