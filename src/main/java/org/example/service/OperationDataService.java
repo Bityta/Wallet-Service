@@ -49,13 +49,13 @@ public class OperationDataService implements OperationDataRepository {
      * При отсутвсие нужных полей - выскакивает ошибка.
      */
     private OperationDataService() {
-        final String path = "/app/resources/application.properties";
+        final String path = "src/main/resources/application.properties";
 
         Properties property = new Properties();
 
         try (FileInputStream file = new FileInputStream(path)) {
             property.load(file);
-            URL = property.getProperty("URL");
+            URL = property.getProperty("URL") + property.getProperty("NAME");
             USERNAME = property.getProperty("USERNAME");
             PASSWORD = property.getProperty("PASSWORD");
 

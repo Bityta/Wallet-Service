@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import org.example.MirgationDatabase.LiquibaseDemo;
 import org.example.entity.Person;
 import org.example.service.OperationDataService;
 import org.example.service.PersonDataService;
@@ -35,6 +36,10 @@ public class BankApplication {
      */
     private final Scanner scanner = new Scanner(System.in);
 
+    public BankApplication() {
+        LiquibaseDemo liquibaseDemo = LiquibaseDemo.getLiquibase();
+        liquibaseDemo.migration();
+    }
 
     /**
      * Выводит Главное меню, после перенаправляет пользователя на функцию - printSelectionMenu.
@@ -245,7 +250,6 @@ public class BankApplication {
 
 
         String input = scanner.nextLine();
-
 
         switch (input) {
             case ("1") -> printLoginMenu();
