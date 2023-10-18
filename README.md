@@ -25,7 +25,7 @@
 Для установки проекта:
 
 - 1.Скачать проект
-- 2. В файл application.property ввести желаемые данные для База Данных, а так же дублировать поля username и password в файл docker-compose 
+- 2. В файл application.properties ввести желаемые данные для База Данных, а так же дублировать поля username и password в файл docker-compose 
 - 3.В директории проекта ввести команду:
 docker-compose up — build
 - 4.Запустить консольную программу, используя на пример IDE intellij idea 
