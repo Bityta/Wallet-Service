@@ -141,9 +141,9 @@ public class BankApplication {
 
                     System.out.print("\nВведите сумму, которую Вы желаете снять: ");
                     String money = scanner.nextLine();
-                    double sum = 0;
+                    double sum = -1;
 
-                    while (!Validator.isCorrectNumber(money) || !Validator.isPositiveNumber(sum)) {
+                    while (!Validator.isCorrectNumber(money) || !Validator.isPositiveNumber(sum)|| person.getBalance() < sum) {
 
 
                         if (!Validator.isCorrectNumber(money)) {
@@ -160,6 +160,8 @@ public class BankApplication {
 
                         if (person.getBalance() < sum) {
                             System.out.println("\n\u001B[31m" + "Недостаточно средст!" + "\u001B[0m");
+                            System.out.print("\nВведите заного сумму, которую Вы желаете снять: ");
+                            money = scanner.nextLine();
 
                         }
                     }
