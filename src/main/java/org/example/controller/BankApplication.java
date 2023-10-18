@@ -218,7 +218,6 @@ public class BankApplication {
                         }
                     }
 
-                    sum = Double.parseDouble(money);
                     operationDataService.addOperation(person, Operation.credit, Double.parseDouble(money));
                 }
                 case ("4") -> printStatement(person);
@@ -227,9 +226,9 @@ public class BankApplication {
                     return;
                 }
 
-                default -> {
-                    System.out.println("\n\u001B[31m" + "Вы ввели некоректные данный, повторите попытку!" + "\u001B[0m");
-                }
+                default ->
+                        System.out.println("\n\u001B[31m" + "Вы ввели некоректные данный, повторите попытку!" + "\u001B[0m");
+
             }
 
 

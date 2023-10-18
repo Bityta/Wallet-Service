@@ -20,15 +20,13 @@ public class Person {
      * Имя пользователя.
      */
     @Getter
-    @Setter
-    private String username;
+    private final String username;
 
     /**
      * Пароль пользователя.
      */
     @Getter
-    @Setter
-    private String password;
+    private final String password;
 
     /**
      * Текущий баланс пользователя.
@@ -60,7 +58,7 @@ public class Person {
      *
      * @param username Имя пользователя.
      * @param password Пароль пользователя.
-     * @param balance Баланс пользователя.
+     * @param balance  Баланс пользователя.
      */
     public Person(String username, String password, double balance) {
         this.username = username;

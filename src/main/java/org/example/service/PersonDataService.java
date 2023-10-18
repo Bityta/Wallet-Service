@@ -1,6 +1,7 @@
 package org.example.service;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.example.entity.Person;
 import org.example.repository.PersonDataRepository;
 import org.example.utils.ConnectionManager;

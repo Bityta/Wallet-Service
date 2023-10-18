@@ -1,5 +1,7 @@
 package org.example.utils;
 
+import lombok.Getter;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -7,6 +9,7 @@ import java.sql.SQLException;
 /**
  * Класс, который обеспечивает подключение к БД
  */
+@Getter
 public final class ConnectionManager {
 
     /**
@@ -40,6 +43,8 @@ public final class ConnectionManager {
      * @return connection
      */
     public static Connection open() {
+
+
         try {
             return DriverManager.getConnection(
                     PropertiesUtil.get(URL_KEY),

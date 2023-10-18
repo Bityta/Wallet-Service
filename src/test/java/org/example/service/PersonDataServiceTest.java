@@ -11,15 +11,22 @@ class PersonDataServiceTest {
 
     @Test
     void addPersonTest() {
-        Person person = new Person("Bityta", "qwerty");
+        Person person = new Person("testing", "qwerty");
         PersonDataService personDataService = PersonDataService.getPersonDataService();
 
         personDataService.addPerson(person);
 
-        Optional<Person> OptionalPerson = Optional.of(person);
 
-        assertEquals(OptionalPerson, personDataService.getPerson(2));
-        assertEquals(OptionalPerson, personDataService.getPerson(person.getUsername(), person.getPassword()));
+        Optional<Long> id = personDataService.getPersonId(person);
+
+        long PersonId = -1;
+
+        if (id.isPresent()) {
+            PersonId = id.get();
+        }
+
+        assertEquals(person.getUsername(), personDataService.getPerson(PersonId).get().getUsername());
+        assertEquals(person.getPassword(), personDataService.getPerson(person.getUsername(), person.getPassword()).get().getPassword());
         assertEquals(Optional.empty(), personDataService.getPerson("zxc", person.getPassword()));
 
 

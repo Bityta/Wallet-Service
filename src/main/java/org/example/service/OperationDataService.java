@@ -2,6 +2,7 @@ package org.example.service;
 
 
 import lombok.Getter;
+import lombok.Setter;
 import org.example.entity.Person;
 import org.example.repository.OperationDataRepository;
 import org.example.utils.ConnectionManager;
@@ -26,6 +27,10 @@ public class OperationDataService implements OperationDataRepository {
      */
     private static OperationDataService operationDataService;
 
+    /**
+     * Экземпляр класса, хранящие URL, USERNAME, PASSWORD Базы данных
+     */
+   
 
     /**
      * Приватный конструктор.

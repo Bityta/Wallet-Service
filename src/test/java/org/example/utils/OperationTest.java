@@ -14,5 +14,4 @@ class OperationTest {
         assertEquals("withdraw", Operation.withdraw.toString());
 
     }
-
 }
