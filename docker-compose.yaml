@@ -7,8 +7,8 @@ services:
     container_name: PostgreSQL
     environment:
 
-      POSTGRES_USER: bityta
-      POSTGRES_PASSWORD: 380201
+      POSTGRES_USER:
+      POSTGRES_PASSWORD:
     ports:
       - "15432:5432"
 
