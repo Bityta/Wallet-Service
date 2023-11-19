@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <include file="V.1.0.0/create-schema-service.xml" relativeToChangelogFile="true"/>
+    <include file="V.1.0.0/create-schema-waller-service.xml" relativeToChangelogFile="true"/>
+    <include file="V.1.0.0/create-sequence-id-person.xml" relativeToChangelogFile="true"/>
+    <include file="V.1.0.0/create-table-person.xml" relativeToChangelogFile="true"/>
+    <include file="V.1.0.0/create-table-operation.xml" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>

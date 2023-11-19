@@ -1,14 +1,15 @@
 package org.example.controller;
 
+import org.example.mirgationDatabase.LiquibaseDemo;
 import org.example.entity.Person;
 import org.example.service.OperationDataService;
 import org.example.service.PersonDataService;
 import org.example.utils.Operation;
 import org.example.utils.Validator;
 
-import java.util.Map;
+
 import java.util.Scanner;
-import java.util.UUID;
+
 
 /**
  * Отвечает за данные, вывводимые в консоль и навигацию в приложении.
@@ -35,6 +36,10 @@ public class BankApplication {
      */
     private final Scanner scanner = new Scanner(System.in);
 
+    public BankApplication() {
+        LiquibaseDemo liquibaseDemo = LiquibaseDemo.getLiquibase();
+        liquibaseDemo.migration();
+    }
 
     /**
      * Выводит Главное меню, после перенаправляет пользователя на функцию - printSelectionMenu.
@@ -136,44 +141,86 @@ public class BankApplication {
 
                     System.out.print("\nВведите сумму, которую Вы желаете снять: ");
                     String money = scanner.nextLine();
+                    double sum = -1;
 
-                    while (Validator.isCorrectNumber(money)) {
-                        System.out.print("\nВведите Корректную сумму, которую Вы желаете снять: ");
-                        money = scanner.nextLine();
+                    while (!Validator.isCorrectNumber(money) || !Validator.isPositiveNumber(sum)|| person.getBalance() < sum) {
+
+
+                        if (!Validator.isCorrectNumber(money)) {
+                            System.out.print("\nВведите Корректную сумму, которую Вы желаете снять: ");
+                            money = scanner.nextLine();
+                        }
+
+                        sum = Double.parseDouble(money);
+
+                        if (!Validator.isPositiveNumber(sum)) {
+                            System.out.print("\nВведите Положительную сумму, которую Вы желаете снять: ");
+                            money = scanner.nextLine();
+                        }
+
+                        if (person.getBalance() < sum) {
+                            System.out.println("\n\u001B[31m" + "Недостаточно средст!" + "\u001B[0m");
+                            System.out.print("\nВведите заного сумму, которую Вы желаете снять: ");
+                            money = scanner.nextLine();
+
+                        }
                     }
 
-                    if (person.getBalance() < Double.parseDouble(money)) {
-                        System.out.println("\n\u001B[31m" + "Недостаточно средст!" + "\u001B[0m");
+                    sum = Double.parseDouble(money);
+                    operationDataService.addOperation(person, Operation.withdraw, sum);
 
-                    } else {
-                        operationDataService.addOperationData(person, Operation.withdraw, Double.parseDouble(money));
-
-                    }
 
                 }
                 case ("2") -> {
 
                     System.out.print("\nВведите сумму, на которую Вы желаете пополнить счет: ");
                     String money = scanner.nextLine();
+                    double sum = 0;
 
-                    while (Validator.isCorrectNumber(money)) {
-                        System.out.print("\nВведите Корректную сумму, на которую Вы желаете пополнить счет: ");
-                        money = scanner.nextLine();
+                    while (!Validator.isCorrectNumber(money) || !Validator.isPositiveNumber(sum)) {
+
+
+                        if (!Validator.isCorrectNumber(money)) {
+                            System.out.print("\nВведите Корректную сумму, на которую Вы желаете пополнить счет: ");
+                            money = scanner.nextLine();
+
+                        }
+
+                        sum = Double.parseDouble(money);
+
+                        if (!Validator.isPositiveNumber(sum)) {
+                            System.out.print("\nВведите Положительную сумму, на которую Вы желаете пополнить счет: ");
+                            money = scanner.nextLine();
+                        }
                     }
 
-                    operationDataService.addOperationData(person, Operation.replenishment, Double.parseDouble(money));
+                    sum = Double.parseDouble(money);
+
+                    operationDataService.addOperation(person, Operation.replenishment, sum);
                 }
                 case ("3") -> {
 
                     System.out.print("\nВведите сумму, на которую Вы желаете взять кредит: ");
                     String money = scanner.nextLine();
 
-                    while (Validator.isCorrectNumber(money)) {
-                        System.out.print("\nВведите Корректную сумму, на которую Вы желаете взять кредит: ");
-                        money = scanner.nextLine();
+                    double sum = 0;
+
+                    while (!Validator.isCorrectNumber(money) || !Validator.isPositiveNumber(sum)) {
+
+                        if (!Validator.isCorrectNumber(money)) {
+                            System.out.print("\nВведите Корректную сумму, на которую Вы желаете взять кредит: ");
+                            money = scanner.nextLine();
+                        }
+
+                        sum = Double.parseDouble(money);
+
+                        if (!Validator.isPositiveNumber(sum)) {
+                            System.out.print("\nВведите Положительную сумму, на которую Вы желаете взять кредит: ");
+                            money = scanner.nextLine();
+                        }
                     }
 
-                    operationDataService.addOperationData(person, Operation.credit, Double.parseDouble(money));
+                    operationDataService.addOperation(person, Operation.credit, Double.parseDouble(money));
                 }
                 case ("4") -> printStatement(person);
                 case ("0") -> {
@@ -181,9 +228,9 @@ public class BankApplication {
                     return;
                 }
 
-                default -> {
-                    System.out.println("\n\u001B[31m" + "Вы ввели некоректные данный, повторите попытку!" + "\u001B[0m");
-                }
+                default ->
+                        System.out.println("\n\u001B[31m" + "Вы ввели некоректные данный, повторите попытку!" + "\u001B[0m");
+
             }
 
 
@@ -196,6 +243,7 @@ public class BankApplication {
      */
     private void printSelectionMenu() {
 
+
         System.out.println("\t 1 - Войти");
         System.out.println("\t 2 - Зарегестрироваться");
         System.out.println("\t 0 - Завершить работу");
@@ -203,7 +251,6 @@ public class BankApplication {
 
 
         String input = scanner.nextLine();
-
 
         switch (input) {
             case ("1") -> printLoginMenu();
@@ -226,22 +273,12 @@ public class BankApplication {
      */
     private void printStatement(Person person) {
 
-        String username = person.getUsername();
 
         System.out.println("\n\t\t\t\tВыписка об операциям");
         System.out.println("\t\t\t" + "#".repeat(30) + "\n");
         System.out.println("\t\t\tИдентификатор\t\t\t\tДействие\t Сумма\n");
 
-        for (Map<UUID, Map<Operation, Double>> i : operationDataService.getOperationData().get(username)) {
-
-            for (Map.Entry<UUID, Map<Operation, Double>> j : i.entrySet()) {
-                System.out.print(j.getKey() + "  ");
-
-                for (Map.Entry<Operation, Double> k : j.getValue().entrySet()) {
-                    System.out.println(k.getKey() + "\t\t" + k.getValue());
-                }
-            }
-        }
+        operationDataService.printOperation(person);
 
 
     }

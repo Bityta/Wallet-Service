@@ -71,10 +71,21 @@ public class Validator {
 
         try {
             Double.parseDouble(number);
-            return false;
-        } catch (NumberFormatException e) {
             return true;
+        } catch (NumberFormatException e) {
+
+            return false;
         }
 
+    }
+
+    /**
+     * Проверка на положительное чисто.
+     *
+     * @param number Проверяемое число.
+     * @return true - если положительное, иначе false.
+     */
+    public static boolean isPositiveNumber(Double number) {
+        return number >= 0;
     }
 }

@@ -3,8 +3,10 @@ package org.example.repository;
 import org.example.entity.Person;
 import org.example.utils.Operation;
 
+
+
 /**
- * Репозиторий Базы данных, хранящий операции пользователей.
+ * Репозиторий Базы Данных, хранящий операции пользователей.
  */
 public interface OperationDataRepository {
 
@@ -15,5 +17,12 @@ public interface OperationDataRepository {
      * @param operation Операция.
      * @param balance   Сумма операции.
      */
-    void addOperationData(Person person, Operation operation, double balance);
+    void addOperation(Person person, Operation operation, double balance);
+
+    /**
+     * Получение всех операции пользователя
+     *
+     * @param person - пользователь
+     */
+    void printOperation(Person person);
 }

@@ -2,6 +2,7 @@ package org.example.repository;
 
 import org.example.entity.Person;
 
+import java.io.IOException;
 import java.util.Optional;
 
 /**
@@ -17,6 +18,15 @@ public interface PersonDataRepository {
      */
     Optional<Person> getPerson(long id);
 
+
+    /**
+     * Получение Id пользователя
+     *
+     * @param person - пользователь
+     * @return Id
+     */
+    Optional<Long> getPersonId(Person person);
+
     /**
      * Получение Пользователя по его полю Имя и Пароль.
      *
@@ -31,7 +41,7 @@ public interface PersonDataRepository {
      *
      * @param person - Добавляемый Пользователь.
      */
-    void addPerson(Person person);
+    void addPerson(Person person) throws IOException;
 
     /**
      * Проверка на содержание Пользователя в Базе данных.
@@ -49,4 +59,17 @@ public interface PersonDataRepository {
      */
     boolean isContainPerson(String username);
 
+    /**
+     * Изменение Баланса Пользователя в БД
+     *
+     * @param balance - баланс
+     */
+    void changeBalance(Person person, double balance);
+
+    /**
+     * Обновление данных пользователя в БД
+     *
+     * @param person - пользователь
+     */
+    void updatePerson(Person person);
 }

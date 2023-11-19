@@ -12,33 +12,35 @@ import java.util.UUID;
 /**
  * Модель Пользователя, задающая его основые параметры и переменные.
  */
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+
 @ToString
 public class Person {
 
     /**
      * Имя пользователя.
      */
-    private String username;
+    @Getter
+    private final String username;
 
     /**
      * Пароль пользователя.
      */
-    private String password;
+    @Getter
+    private final String password;
 
     /**
      * Текущий баланс пользователя.
      */
+    @Getter
+    @Setter
     private double balance;
 
     /**
      * Переменная, хранящая массив всех операций, производимых пользователем.
      * Сохраняемые данные: уникальный идентификатор операции, операция, сумма операции.
      */
-    private List<Map<UUID, Map<Operation, Double>>> transactions = new ArrayList<>();
+    @Getter
+    private final List<Map<UUID, Map<Operation, Double>>> transactions = new ArrayList<>();
 
     /**
      * Конструктор
@@ -52,12 +54,27 @@ public class Person {
     }
 
     /**
+     * Конструктор
+     *
+     * @param username Имя пользователя.
+     * @param password Пароль пользователя.
+     * @param balance  Баланс пользователя.
+     */
+    public Person(String username, String password, double balance) {
+        this.username = username;
+        this.password = password;
+        this.balance = balance;
+    }
+
+    /**
      * Увелечение баланса.
      *
      * @param balance Прибавляемая Сумма.
      */
     public void addMoney(double balance) {
+
         this.balance += balance;
+
     }
 
     /**
